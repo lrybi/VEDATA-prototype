@@ -1,1 +1,1 @@
-# VERISTA-prototype # VEDATA-prototype
+# VERITAS-prototype # VEDATA-prototype
