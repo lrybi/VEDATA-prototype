@@ -1,1 +1,1 @@
-See the [user manual 📖](https://hydra.family/head-protocol/docs/getting-started).
+# VERISTA-prototype # VEDATA-prototype
