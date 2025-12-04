@@ -1,0 +1,224 @@
+services:
+  cardano-node:
+    image: ghcr.io/intersectmbo/cardano-node:10.5.3
+    volumes:
+      - /home/lelan/devnet:/devnet
+    environment:
+      - CARDANO_BLOCK_PRODUCER=true
+      - CARDANO_SOCKET_PATH=/devnet/node.socket # used by cardano-node
+      - CARDANO_NODE_SOCKET_PATH=/devnet/node.socket # used by cardano-cli
+    command:
+      [ "run"
+      , "--config", "/devnet/cardano-node.json"
+      , "--topology", "/devnet/topology.json"
+      , "--database-path", "/devnet/db"
+      , "--shelley-kes-key", "/devnet/kes.skey"
+      , "--shelley-vrf-key", "/devnet/vrf.skey"
+      , "--shelley-operational-certificate", "/devnet/opcert.cert"
+      , "--byron-delegation-certificate", "/devnet/byron-delegation.cert"
+      , "--byron-signing-key", "/devnet/byron-delegate.key"
+      ]
+
+  hydra-node-1:
+   # NOTE: Make sure to use the same image in ./seed-devnet.sh
+    image: ghcr.io/cardano-scaling/hydra-node:1.2.0
+    build:
+      context: ../
+      target: hydra-node
+    volumes:
+      - .:/keys:ro
+      - /home/lelan/devnet:/devnet
+    ports:
+      # - "4001:4001"
+      # - "5001:5001"
+      - "10005:10005"
+      - "5001:5001"
+    command:
+      [ "--node-id", "1"
+      , "--api-host", "0.0.0.0"
+      # , "--api-port", "10005"
+      , "--api-port", "10005"
+      , "--listen", "172.16.238.10:5001"
+      , "--monitoring-port", "6001"
+      , "--peer", "172.16.238.20:5001"
+      , "--peer", "172.16.238.30:5001"
+      , "--hydra-scripts-tx-id", "${HYDRA_SCRIPTS_TX_ID}"
+      , "--hydra-signing-key", "/keys/alice.sk"
+      , "--hydra-verification-key", "/keys/bob.vk"
+      , "--hydra-verification-key", "/keys/carol.vk"
+      , "--cardano-signing-key", "/devnet/credentials/alice.sk"
+      , "--cardano-verification-key", "/devnet/credentials/bob.vk"
+      , "--cardano-verification-key", "/devnet/credentials/carol.vk"
+      , "--ledger-protocol-parameters", "/devnet/protocol-parameters.json"
+      , "--testnet-magic", "42"
+      , "--node-socket", "/devnet/node.socket"
+      , "--persistence-dir", "/devnet/persistence/alice"
+      , "--contestation-period", "3s"
+      ]
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.10
+    restart: always
+
+  hydra-node-2:
+    # NOTE: Make sure to use the same image in ./seed-devnet.sh
+    image: ghcr.io/cardano-scaling/hydra-node:1.2.0
+    build:
+      context: ../
+      target: hydra-node
+    volumes:
+      - .:/keys:ro
+      - /home/lelan/devnet:/devnet
+    ports:
+      - "4002:4001"
+      - "5002:5001"
+    command:
+      [ "--node-id", "2"
+      , "--api-host", "0.0.0.0"
+      , "--listen", "172.16.238.20:5001"
+      , "--monitoring-port", "6001"
+      , "--peer", "172.16.238.10:5001"
+      , "--peer", "172.16.238.30:5001"
+      , "--hydra-scripts-tx-id", "${HYDRA_SCRIPTS_TX_ID}"
+      , "--hydra-signing-key", "/keys/bob.sk"
+      , "--hydra-verification-key", "/keys/alice.vk"
+      , "--hydra-verification-key", "/keys/carol.vk"
+      , "--cardano-signing-key", "/devnet/credentials/bob.sk"
+      , "--cardano-verification-key", "/devnet/credentials/alice.vk"
+      , "--cardano-verification-key", "/devnet/credentials/carol.vk"
+      , "--ledger-protocol-parameters", "/devnet/protocol-parameters.json"
+      , "--testnet-magic", "42"
+      , "--node-socket", "/devnet/node.socket"
+      , "--persistence-dir", "/devnet/persistence/bob"
+      , "--contestation-period", "3s"
+      ]
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.20
+    restart: always
+
+  hydra-node-3:
+    # NOTE: Make sure to use the same image in ./seed-devnet.sh
+    image: ghcr.io/cardano-scaling/hydra-node:1.2.0
+    build:
+      context: ../
+      target: hydra-node
+    volumes:
+      - .:/keys:ro
+      - /home/lelan/devnet:/devnet
+    ports:
+      - "4003:4001"
+      - "5003:5001"
+    command:
+      [ "--node-id", "3"
+      , "--api-host", "0.0.0.0"
+      , "--listen", "172.16.238.30:5001"
+      , "--monitoring-port", "6001"
+      , "--peer", "172.16.238.10:5001"
+      , "--peer", "172.16.238.20:5001"
+      , "--hydra-scripts-tx-id", "${HYDRA_SCRIPTS_TX_ID}"
+      , "--hydra-signing-key", "/keys/carol.sk"
+      , "--hydra-verification-key", "/keys/alice.vk"
+      , "--hydra-verification-key", "/keys/bob.vk"
+      , "--cardano-signing-key", "/devnet/credentials/carol.sk"
+      , "--cardano-verification-key", "/devnet/credentials/alice.vk"
+      , "--cardano-verification-key", "/devnet/credentials/bob.vk"
+      , "--ledger-protocol-parameters", "/devnet/protocol-parameters.json"
+      , "--testnet-magic", "42"
+      , "--node-socket", "/devnet/node.socket"
+      , "--persistence-dir", "/devnet/persistence/carol"
+      , "--contestation-period", "3s"
+      ]
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.30
+    restart: always
+
+  hydra-tui-1:
+    image: ghcr.io/cardano-scaling/hydra-tui:1.2.0
+    build:
+       context: ../
+       target: hydra-tui
+    command:
+      [ "--connect", "172.16.238.10:4001"
+      , "--node-socket", "/devnet/node.socket"
+      , "--testnet-magic", "42"
+      , "--cardano-signing-key", "/devnet/credentials/alice-funds.sk"
+      ]
+    volumes:
+      - /home/lelan/devnet:/devnet
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.11
+
+  hydra-tui-2:
+    image: ghcr.io/cardano-scaling/hydra-tui:1.2.0
+    build:
+       context: ../
+       target: hydra-tui
+    command:
+      [ "--connect", "172.16.238.20:4001"
+      , "--node-socket", "/devnet/node.socket"
+      , "--testnet-magic", "42"
+      , "--cardano-signing-key", "/devnet/credentials/bob-funds.sk"
+      ]
+    volumes:
+      - /home/lelan/devnet:/devnet
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.21
+
+  hydra-tui-3:
+    image: ghcr.io/cardano-scaling/hydra-tui:1.2.0
+    build:
+       context: ../
+       target: hydra-tui
+    command:
+      [ "--connect", "172.16.238.30:4001"
+      , "--node-socket", "/devnet/node.socket"
+      , "--testnet-magic", "42"
+      , "--cardano-signing-key", "/devnet/credentials/carol-funds.sk"
+      ]
+    volumes:
+      - /home/lelan/devnet:/devnet
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.31
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    command:
+    - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+    - ./prometheus/docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.5
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - DS_PROMETHEUS=prometheus
+    volumes:
+      - "./grafana/docker/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml"
+      - "./grafana/docker/dashboard.json:/var/lib/grafana/dashboards/dashboard.json"
+      - "./grafana/docker/default.yaml:/etc/grafana/provisioning/dashboards/default.yaml"
+    networks:
+      hydra_net:
+        ipv4_address: 172.16.238.8
+
+networks:
+  hydra_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+          gateway: 172.16.238.1
