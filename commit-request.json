@@ -1,0 +1,38 @@
+{
+  "utxo": {
+    "c20b459b9e90eafc45978c7eff203b04e7d5db32692183e9e8a4758fcd8295a0#0": {
+      "address": "addr_test1wq6tf456546hlzrqwrefvrcj70fjmusqzzqs2yaanhgnfzc32wjgd",
+      "datum": null,
+      "inlineDatum": {
+        "constructor": 0,
+        "fields": [
+          {
+            "bytes": "62"
+          }
+        ]
+      },
+      "inlineDatumRaw": "d8799f4162ff",
+      "inlineDatumhash": "318cda4896e484dfcfb1582473b68335af322a55e4d825e2edf5c68c4f38e46a",
+      "referenceScript": null,
+      "value": {
+        "lovelace": 2000000
+      }
+    },
+    "c20b459b9e90eafc45978c7eff203b04e7d5db32692183e9e8a4758fcd8295a0#1": {
+      "address": "addr_test1vqe6phnagf7u2edv232qcc4fj2tat2kqg3yrddmpk7lwr8snsjep8",
+      "datum": null,
+      "datumhash": null,
+      "inlineDatum": null,
+      "inlineDatumRaw": null,
+      "referenceScript": null,
+      "value": {
+        "lovelace": 5000000
+      }
+    }
+  },
+  "blueprintTx": {
+    "type": "Tx ConwayEra",
+    "description": "Ledger Cddl Format",
+    "cborHex": "84a300d9010282825820c20b459b9e90eafc45978c7eff203b04e7d5db32692183e9e8a4758fcd8295a000825820c20b459b9e90eafc45978c7eff203b04e7d5db32692183e9e8a4758fcd8295a001018282581d7034b4d69aa5757f886070f2960f12f3d32df20010810513bd9dd1348b1a001e848082581d6033a0de7d427dc565ac54540c62a99297d5aac0444836b761b7bee19e1a004c4b400200a207d901028158b158af01010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cc01c0092225980099b8748008c01cdd500144c8cc896600266e1d2000300a375400d13232598009808001456600266e1d2000300c375400713371e6eb8c03cc034dd50041bae300f300d3754601e601a6ea800e2c805a2c8070dd7180700098059baa0068b2012300b001300b300c0013008375400516401830070013003375400f149a26cac8008105a182000082d8799f4162ff821a000f42401a00989680f5f6"
+  }
+}
