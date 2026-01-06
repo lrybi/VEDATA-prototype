@@ -1,0 +1,9 @@
+bin
+credentials
+db
+hydra
+persistence-alice
+persistence-bob
+cardano-node-10.5.3-linux.tar.gz
+hydra-x86_64-linux-1.2.0.zip
+.env
